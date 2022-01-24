@@ -13,20 +13,23 @@ def process(args):
   return word_bank.get_worst_case(guess, possibilities), guess
 
 
-def play(clues: Tuple[lib.Clue], words: List[str]) -> str:
+def play(clues: Tuple[lib.Clue], words: List[str], hard_mode=True) -> str:
   possibilities = list(word_bank.get_possibilities(clues, words))
   possibility_set = set(possibilities)
 
-  if len(possibilities) < 10:
-    print(possibilities)
+  # if len(possibilities) < 20:
+  #   print(possibilities)
 
   if len(possibilities) == 1:
-    return possibilities[0]
+    return possibilities[0], 1
 
   min_poss = float('inf')
   best_guess = None
 
-  word_list = possibilities + [word for word in word_bank.answers if word not in possibility_set]
+  word_list = possibilities + (
+    [word for word in word_bank.answers if word not in possibility_set]
+    if not hard_mode else []
+  )
   args = [(word, possibilities) for word in word_list]
 
   with multiprocessing.Pool() as pool:
